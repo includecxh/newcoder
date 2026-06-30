@@ -1,0 +1,32 @@
+[project]
+name = "mianjing"
+version = "0.1.0"
+description = "牛客面经自动整理器：粘贴面经，自动拆问题+回答，存成 markdown"
+requires-python = ">=3.10"
+dependencies = [
+    "openai>=1.0.0",
+    "python-dotenv>=1.0.0",
+    "requests>=2.31.0",
+    "beautifulsoup4>=4.12.0",
+    "pyyaml>=6.0",
+    "playwright>=1.40.0",
+]
+
+[project.scripts]
+mianjing = "mianjing.interfaces.cli.main:main"
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+]
+
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]

@@ -1,0 +1,16 @@
+# 非敏感配置（可入库）。敏感的 LLM_API_KEY 仍放 .env
+# 输出目录
+output_dir: output
+# 默认模式：low=批量答快 / high=逐题答高质量
+default_mode: low
+# LLM 429 限流重试次数
+max_retries: 3
+# 指数退避秒数列表
+retry_backoff: [1, 2, 4]
+# URL 抓取超时秒数
+timeout: 15
+# 抓取后端：requests(轻量普通站) | playwright(绕WAF抓JS渲染)
+fetch_backend: requests
+# playwright 用的 chrome.exe 路径（fetch_backend=playwright 时必填）
+# 例：C:/path/to/chrome.exe
+chrome_path: ""

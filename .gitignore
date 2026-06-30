@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.pytest_cache/
+build/
+dist/
+
+# 虚拟环境
+.venv/
+venv/
+env/
+
+# 密钥与输出（绝不入库）
+.env
+output/
+
+# 开发过程文档（本地保留，不发布到仓库）
+docs/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+.DS_Store
