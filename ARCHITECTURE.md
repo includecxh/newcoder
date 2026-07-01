@@ -17,8 +17,8 @@ interfaces/cli      →  application  →  domain
 
 | 层 | 目录 | 职责 |
 |----|------|------|
-| 入口层 | `interfaces/cli/` | 命令行交互、参数解析、输入来源收敛、结果汇总 |
-| 应用层 | `application/` | 流程编排（compile_service）、格式化（formatter）、输入解析（input） |
+| 入口层 | `interfaces/cli/` | 命令行交互、参数解析、输入来源收敛、结果汇总、首启检测 |
+| 应用层 | `application/` | 流程编排（compile_service）、格式化（formatter）、输入解析（input）、首启引导（setup） |
 | 领域层 | `domain/` | 业务数据结构（Mianjing/Question/Answer/InputItem/CompileResult） |
 | 基础设施层 | `infrastructure/` | 外部对接：调 LLM（llm_gateway）、解析 JSON（llm_parser）、写文件（md_writer）、抓取（url_fetcher/browser_fetcher） |
 
@@ -83,6 +83,9 @@ LLM 返回的 JSON 常不规范（带代码块标记、前后多余文字）。`
 - `.env`（不入库）：LLM 密钥
 
 默认值有代码兜底：yaml 不存在或缺字段时用内置默认，向后兼容。命令行参数优先于配置文件。
+
+### 8. 首启交互式引导
+新用户首次运行、检测到 `LLM_API_KEY` 未配置时（`config.is_configured()`），`cli` 自动触发 `application/setup.setup_wizard()`：交互式引导用户输入 key（必填）和网关地址/模型名（回车用默认占位符），写入本地 `.env`，然后继续运行。已配置用户自动跳过，向后兼容。`.env` 始终被 `.gitignore` 排除。
 
 ## 扩展点
 
