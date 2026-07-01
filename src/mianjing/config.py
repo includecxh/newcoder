@@ -19,6 +19,9 @@ DEFAULT_MODE = "low"
 DEFAULT_MAX_RETRIES = 3
 DEFAULT_RETRY_BACKOFF = [1, 2, 4]
 DEFAULT_TIMEOUT = 15
+# LLM 网关/模型占位符默认值（真实值在 .env，不入库）
+DEFAULT_BASE_URL = "https://your-llm-gateway.example.com/v1"
+DEFAULT_MODEL = "your-model-name"
 
 
 @dataclass
@@ -35,6 +38,14 @@ class Config:
     timeout: int = DEFAULT_TIMEOUT
     fetch_backend: str = "requests"  # requests | playwright
     chrome_path: str = ""  # playwright 后端用的 chrome.exe 路径
+
+
+def is_configured() -> bool:
+    """检测是否已配置 LLM_API_KEY（环境变量或 .env 经 load_dotenv 加载）。
+
+    首启引导用：未配置时触发交互式引导。
+    """
+    return bool(os.environ.get("LLM_API_KEY", "").strip())
 
 
 def _read_yaml(yaml_path: Path) -> dict:
@@ -70,8 +81,8 @@ def load_config(yaml_path: Path | str | None = None) -> Config:
         raise RuntimeError(
             "未配置 LLM_API_KEY，请在 .env 文件中设置（参考 .env.example）"
         )
-    base_url = os.environ.get("LLM_BASE_URL", "https://your-llm-gateway.example.com/v1")
-    model = os.environ.get("LLM_MODEL", "your-model-name")
+    base_url = os.environ.get("LLM_BASE_URL", DEFAULT_BASE_URL)
+    model = os.environ.get("LLM_MODEL", DEFAULT_MODEL)
 
     return Config(
         api_key=api_key,

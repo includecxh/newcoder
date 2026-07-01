@@ -100,3 +100,25 @@ chrome_path: "C:/some/chrome.exe"
     config = load_config(yaml_path)
     assert config.fetch_backend == "playwright"
     assert config.chrome_path == "C:/some/chrome.exe"
+
+
+# ========== 首启引导：is_configured ==========
+from mianjing.config import is_configured
+
+
+@patch.dict("os.environ", {}, clear=True)
+def test_is_configured_false_when_no_key() -> None:
+    """无 key → False。"""
+    assert is_configured() is False
+
+
+@patch.dict("os.environ", {"LLM_API_KEY": "k"}, clear=True)
+def test_is_configured_true_when_key_set() -> None:
+    """有 key → True。"""
+    assert is_configured() is True
+
+
+@patch.dict("os.environ", {"LLM_API_KEY": ""}, clear=True)
+def test_is_configured_false_when_key_empty() -> None:
+    """key 空 → False。"""
+    assert is_configured() is False

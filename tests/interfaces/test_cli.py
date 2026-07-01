@@ -117,6 +117,33 @@ def test_main_multiple_sources_error(mock_cfg, mock_batch, tmp_path: Path, capsy
     mock_batch.assert_not_called()
 
 
+# ========== 首启引导：未配置触发 ==========
+@patch("mianjing.interfaces.cli.main.setup_wizard", return_value=True)
+@patch("mianjing.interfaces.cli.main.is_configured", return_value=False)
+@patch("mianjing.interfaces.cli.main.compile_mianjing")
+@patch("mianjing.interfaces.cli.main.load_config")
+def test_main_triggers_setup_when_unconfigured(
+    mock_cfg, mock_compile, mock_isconf, mock_wizard, tmp_path: Path,
+) -> None:
+    """未配置 → 调 setup_wizard，完成后继续。"""
+    mock_cfg.return_value = _mock_config()
+    fake = tmp_path / "r.md"
+    fake.write_text("# x", encoding="utf-8")
+    mock_compile.return_value = fake
+    exit_code = main(["-m", "面经", "-o", str(tmp_path)])
+    assert exit_code == 0
+    mock_wizard.assert_called_once()
+
+
+@patch("mianjing.interfaces.cli.main.setup_wizard")
+@patch("mianjing.interfaces.cli.main.is_configured", return_value=False)
+def test_main_returns_1_when_user_cancels_setup(mock_isconf, mock_wizard) -> None:
+    """未配置且用户取消 → 退出码 1，不继续。"""
+    mock_wizard.return_value = False
+    exit_code = main(["-m", "面经"])
+    assert exit_code == 1
+
+
 # ========== Day4：--url ==========
 @patch("mianjing.interfaces.cli.main.read_url")
 @patch("mianjing.interfaces.cli.main.compile_batch")

@@ -12,7 +12,8 @@ from pathlib import Path
 
 from mianjing.application.compile_service import compile_batch, compile_mianjing
 from mianjing.application.input import read_input, read_url
-from mianjing.config import load_config
+from mianjing.application.setup import setup_wizard
+from mianjing.config import is_configured, load_config
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -25,6 +26,11 @@ def main(argv: list[str] | None = None) -> int:
     if hasattr(sys.stdout, "reconfigure"):
         sys.stdout.reconfigure(encoding="utf-8")
         sys.stderr.reconfigure(encoding="utf-8")
+
+    # 首启检测：未配置 LLM_API_KEY → 交互式引导写入 .env
+    if not is_configured():
+        if not setup_wizard():
+            return 1
 
     parser = argparse.ArgumentParser(
         prog="mianjing",
