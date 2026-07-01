@@ -101,6 +101,30 @@ pytest
 
 Python 3.10+、openai（OpenAI 兼容）、python-dotenv、requests、beautifulsoup4、playwright（可选）、PyYAML、pytest。
 
+## 卸载
+
+本工具不会向系统目录写入额外文件，卸载可做到无残留：
+
+```bash
+# 1. 卸载包与 mianjing 命令（同时移除入口脚本）
+pip uninstall mianjing
+```
+
+随后删除克隆下来的项目目录即可带走其余所有文件（`.env`、`config.yaml`、`output/`、源码、`__pycache__`、`*.egg-info`）：
+
+```bash
+# 2. 删除项目目录
+Remove-Item -Recurse -Force newcoder     # Windows PowerShell
+rm -rf newcoder                          # macOS / Linux
+```
+
+可选清理：
+
+```bash
+# 3. 清 pip 下载缓存（可选）
+pip cache purge
+```
+
 ## 许可与免责
 
 - 仅供个人学习使用。

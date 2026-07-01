@@ -124,6 +124,30 @@ pytest
 
 Python 3.10+, openai (OpenAI-compatible), python-dotenv, requests, beautifulsoup4, playwright (optional), PyYAML, pytest.
 
+## Uninstall
+
+This tool writes nothing to system directories outside the install, so a clean uninstall is straightforward:
+
+```bash
+# 1. Remove the package and the `mianjing` command (entry script is removed too)
+pip uninstall mianjing
+```
+
+Then delete the cloned project directory — this takes everything else with it (`.env`, `config.yaml`, `output/`, source, `__pycache__`, `*.egg-info`):
+
+```bash
+# 2. Delete the project directory
+Remove-Item -Recurse -Force newcoder     # Windows PowerShell
+rm -rf newcoder                          # macOS / Linux
+```
+
+Optional cleanup:
+
+```bash
+# 3. Clear the pip download cache (optional)
+pip cache purge
+```
+
 ## License & Disclaimer
 
 - For personal learning use only.
