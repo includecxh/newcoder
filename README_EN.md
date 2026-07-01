@@ -12,6 +12,7 @@ Input interview experience text from Nowcoder (via text, file, directory, or URL
 - **Normalized Markdown**: auto-generated title, metadata, table of contents, and structured Q&A
 - **429 rate-limit retry**: exponential backoff on rate limits; batch processing won't be interrupted
 - **Skip-on-failure + summary**: a single failure won't break the whole batch
+- **First-run wizard**: on first run with no config, interactively guides you to enter credentials and writes `.env`
 - **Configurable**: `config.yaml` controls defaults — tune without touching code
 
 ## Installation
@@ -24,11 +25,31 @@ cd newcoder
 pip install -e .
 ```
 
+## Quick Start
+
+After installation, just run any command. On first run with no LLM credentials configured, an interactive wizard launches automatically:
+
+```bash
+mianjing -m "Q1: Why is Redis fast?"
+```
+
+The wizard asks for (API key required, the rest can use defaults via Enter):
+
+```
+👋 Welcome to Mianjing Auto-Compiler! No LLM config detected.
+Enter LLM API key (required): sk-xxxx
+Enter gateway URL (Enter for default https://your-llm-gateway.example.com/v1):
+Enter model name (Enter for default your-model-name):
+✅ Config written to .env (excluded by gitignore).
+```
+
+Config is written to the local `.env`, then the command continues automatically and won't ask again. You can also skip the wizard and fill in `.env` manually per the Configuration section below.
+
 ## Configuration
 
 ### 1. LLM credentials (.env, not committed)
 
-Copy `.env.example` to `.env` and fill in your own LLM service info (any OpenAI-compatible gateway or provider):
+Can be auto-written by the first-run wizard, or manually: copy `.env.example` to `.env` and fill in (any OpenAI-compatible gateway or provider):
 
 ```env
 LLM_API_KEY=your_api_key
