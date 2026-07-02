@@ -55,6 +55,8 @@ Can be auto-written by the first-run wizard, or manually: copy `.env.example` to
 LLM_API_KEY=your_api_key
 LLM_BASE_URL=https://your-llm-gateway.example.com/v1
 LLM_MODEL=your-model-name
+# chrome.exe path for the playwright backend (only when fetch_backend=playwright; empty falls back to config.yaml)
+CHROME_PATH=
 ```
 
 > `.env` is excluded by `.gitignore` and will never be committed. Do not hardcode keys in code.
@@ -70,7 +72,7 @@ max_retries: 3           # 429 retry count
 retry_backoff: [1, 2, 4] # backoff seconds
 timeout: 15              # URL fetch timeout
 fetch_backend: requests  # fetch backend requests | playwright
-chrome_path: ""          # chrome.exe path for the playwright backend
+chrome_path: ""          # chrome.exe path for the playwright backend (reads .env CHROME_PATH first, falls back here)
 ```
 
 > CLI flags take precedence over config.yaml (e.g., `--mode high` overrides `default_mode`).
@@ -98,7 +100,7 @@ Output goes to the `output/` directory, named `sourcename_timestamp.md`.
 ## About URL Fetching (requests vs playwright)
 
 - **requests backend** (default): lightweight, suitable for normal websites.
-- **playwright backend**: uses a headless browser to render JS content and bypass some WAFs. Set `fetch_backend: playwright` and fill `chrome_path` in `config.yaml` (pointing to an existing chrome.exe — no extra kernel download needed).
+- **playwright backend**: uses a headless browser to render JS content and bypass some WAFs. Set `fetch_backend: playwright` and fill `chrome_path` (pointing to an existing chrome.exe — no extra kernel download needed). `chrome_path` reads `.env`'s `CHROME_PATH` first (local path stays out of the repo), falling back to config.yaml.
 
 > Fetching is intended only for the "fetch a single page by URL" scenario, triggered manually and at low frequency. Please respect the target site's robots policy and terms of service; for personal learning use only.
 

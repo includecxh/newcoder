@@ -80,9 +80,9 @@ LLM 返回的 JSON 常不规范（带代码块标记、前后多余文字）。`
 
 ### 7. 配置分工
 - `config.yaml`（入库）：非敏感默认值（输出路径、模式、重试参数等）
-- `.env`（不入库）：LLM 密钥
+- `.env`（不入库）：LLM 密钥、playwright 后端的 `chrome_path`（本机路径含用户名，不入库）
 
-默认值有代码兜底：yaml 不存在或缺字段时用内置默认，向后兼容。命令行参数优先于配置文件。
+默认值有代码兜底：yaml 不存在或缺字段时用内置默认，向后兼容。命令行参数优先于配置文件。`chrome_path` 优先读 `.env` 的 `CHROME_PATH`，留空 fallback `config.yaml`，都空则空串。
 
 ### 8. 首启交互式引导
 新用户首次运行、检测到 `LLM_API_KEY` 未配置时（`config.is_configured()`），`cli` 自动触发 `application/setup.setup_wizard()`：交互式引导用户输入 key（必填）和网关地址/模型名（回车用默认占位符），写入本地 `.env`，然后继续运行。已配置用户自动跳过，向后兼容。`.env` 始终被 `.gitignore` 排除。

@@ -34,6 +34,8 @@ mianjing -m "面试官问了：1. Redis为什么快"
 LLM_API_KEY=your_api_key
 LLM_BASE_URL=https://your-llm-gateway.example.com/v1
 LLM_MODEL=your-model-name
+# playwright 后端用的 chrome.exe 路径（仅 fetch_backend=playwright 时填；留空走 config.yaml）
+CHROME_PATH=
 ```
 
 ### 2. 非敏感默认值（config.yaml，可入库）
@@ -47,7 +49,7 @@ max_retries: 3           # 429 重试次数
 retry_backoff: [1, 2, 4] # 退避秒数
 timeout: 15              # URL 抓取超时
 fetch_backend: requests  # 抓取后端 requests | playwright
-chrome_path: ""          # playwright 后端用的 chrome.exe 路径
+chrome_path: ""          # playwright 后端 chrome.exe 路径（优先读 .env 的 CHROME_PATH，留空则用此处）
 ```
 
 > 命令行参数优先于 config.yaml（如 `--mode high` 覆盖 `default_mode`）。
@@ -75,7 +77,7 @@ mianjing --url https://example.com/some-interview
 ## 关于 URL 抓取（requests vs playwright）
 
 - **requests 后端**（默认）：轻量，适合普通网站。
-- **playwright 后端**：用无头浏览器抓 JS 渲染内容、绕过部分 WAF。需在 `config.yaml` 设 `fetch_backend: playwright` 并填 `chrome_path`（指向已有的 chrome.exe，无需额外下载内核）。
+- **playwright 后端**：用无头浏览器抓 JS 渲染内容、绕过部分 WAF。需在 `config.yaml` 设 `fetch_backend: playwright`，并填 `chrome_path`（指向已有的 chrome.exe，无需额外下载内核）。`chrome_path` 优先读 `.env` 的 `CHROME_PATH`（本机路径不入库），留空则用 config.yaml。
 
 > 抓取仅用于「给 URL 抓单篇」场景，手动触发、低频。请遵守目标网站的 robots 协议与服务条款，仅供个人学习使用。
 

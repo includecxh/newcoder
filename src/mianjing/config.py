@@ -22,6 +22,9 @@ DEFAULT_TIMEOUT = 15
 # LLM 网关/模型占位符默认值（真实值在 .env，不入库）
 DEFAULT_BASE_URL = "https://your-llm-gateway.example.com/v1"
 DEFAULT_MODEL = "your-model-name"
+# playwright 后端的 chrome.exe 路径：本机路径含用户名，绝不入库。
+# 走 .env 的 CHROME_PATH；env 未设时 fallback 到 config.yaml 的 chrome_path，都空则空串。
+DEFAULT_CHROME_PATH = ""
 
 
 @dataclass
@@ -94,7 +97,8 @@ def load_config(yaml_path: Path | str | None = None) -> Config:
         retry_backoff=cfg.get("retry_backoff", list(DEFAULT_RETRY_BACKOFF)),
         timeout=cfg.get("timeout", DEFAULT_TIMEOUT),
         fetch_backend=cfg.get("fetch_backend", "requests"),
-        chrome_path=cfg.get("chrome_path", ""),
+        # chrome_path 优先读 .env 的 CHROME_PATH（本机路径不入库），env 空则 fallback yaml，都空则空串
+        chrome_path=os.environ.get("CHROME_PATH", "") or cfg.get("chrome_path", DEFAULT_CHROME_PATH),
     )
 
 

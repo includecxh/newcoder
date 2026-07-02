@@ -81,7 +81,7 @@ def test_config_is_dataclass_with_defaults() -> None:
 
 
 # ========== Playwright fetcher：fetch_backend/chrome_path ==========
-@patch.dict("os.environ", {"LLM_API_KEY": "k"}, clear=False)
+@patch.dict("os.environ", {"LLM_API_KEY": "k"}, clear=True)
 def test_load_config_default_fetch_backend(tmp_path: Path) -> None:
     """默认 fetch_backend=requests，chrome_path 空。"""
     config = load_config(tmp_path / "nope.yaml")
@@ -89,9 +89,9 @@ def test_load_config_default_fetch_backend(tmp_path: Path) -> None:
     assert config.chrome_path == ""
 
 
-@patch.dict("os.environ", {"LLM_API_KEY": "k"}, clear=False)
+@patch.dict("os.environ", {"LLM_API_KEY": "k"}, clear=True)
 def test_load_config_reads_playwright_backend(tmp_path: Path) -> None:
-    """yaml 配 fetch_backend=playwright + chrome_path。"""
+    """yaml 配 fetch_backend=playwright + chrome_path（env 未设 → 读 yaml）。"""
     yaml_path = tmp_path / "config.yaml"
     _write_yaml(yaml_path, """
 fetch_backend: playwright
@@ -100,6 +100,34 @@ chrome_path: "C:/some/chrome.exe"
     config = load_config(yaml_path)
     assert config.fetch_backend == "playwright"
     assert config.chrome_path == "C:/some/chrome.exe"
+
+
+# ========== chrome_path 优先级：env > yaml > 默认空（本机路径走 .env 不入库）==========
+@patch.dict("os.environ", {"LLM_API_KEY": "k", "CHROME_PATH": "env_chrome.exe"}, clear=True)
+def test_load_config_chrome_path_env_overrides_yaml(tmp_path: Path) -> None:
+    """env 设 CHROME_PATH + yaml 设 chrome_path → env 胜出（本机路径优先走 .env）。"""
+    yaml_path = tmp_path / "config.yaml"
+    _write_yaml(yaml_path, 'chrome_path: "yaml_chrome.exe"\n')
+    config = load_config(yaml_path)
+    assert config.chrome_path == "env_chrome.exe"
+
+
+@patch.dict("os.environ", {"LLM_API_KEY": "k"}, clear=True)
+def test_load_config_chrome_path_yaml_fallback_when_env_unset(tmp_path: Path) -> None:
+    """env 未设 CHROME_PATH + yaml 设 → fallback 读 yaml。"""
+    yaml_path = tmp_path / "config.yaml"
+    _write_yaml(yaml_path, 'chrome_path: "C:/from/yaml/chrome.exe"\n')
+    config = load_config(yaml_path)
+    assert config.chrome_path == "C:/from/yaml/chrome.exe"
+
+
+@patch.dict("os.environ", {"LLM_API_KEY": "k"}, clear=True)
+def test_load_config_chrome_path_empty_when_both_unset(tmp_path: Path) -> None:
+    """env + yaml 都未设 chrome_path → 空串（playwright 后端会报缺 chrome_path）。"""
+    yaml_path = tmp_path / "config.yaml"
+    _write_yaml(yaml_path, "fetch_backend: requests\n")
+    config = load_config(yaml_path)
+    assert config.chrome_path == ""
 
 
 # ========== 首启引导：is_configured ==========
